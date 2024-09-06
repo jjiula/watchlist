@@ -1,5 +1,6 @@
 package com.openclassrooms.watchlist;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 public class WatchlistItem {
 
     @NotBlank(message="Please enter the title")
