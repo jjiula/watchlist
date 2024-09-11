@@ -6,13 +6,12 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-//public class WatchlistApplication extends SpringBootServletInitializer {
-	public class WatchlistApplication {
+public class WatchlistApplication extends SpringBootServletInitializer {
 
-//	@Override
-//	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-//		return builder.sources(WatchlistApplication.class);
-//	}
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+		return builder.sources(WatchlistApplication.class);
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(WatchlistApplication.class, args);

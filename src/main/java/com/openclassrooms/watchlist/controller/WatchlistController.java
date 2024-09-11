@@ -1,5 +1,11 @@
-package com.openclassrooms.watchlist;
+package com.openclassrooms.watchlist.controller;
 
+import com.openclassrooms.watchlist.domain.WatchlistItem;
+import com.openclassrooms.watchlist.exception.DuplicateTitleException;
+import com.openclassrooms.watchlist.service.WatchlistService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -17,14 +23,23 @@ import java.util.Map;
 @Controller
 public class WatchlistController {
 
-    private List<WatchlistItem> watchlistItems = new ArrayList<WatchlistItem>();
-    private static int index = 1;
+    private WatchlistService watchlistService;
+
+    private final Logger logger = LoggerFactory.getLogger(WatchlistController.class);
+
+    @Autowired
+    public WatchlistController(WatchlistService watchlistService) {
+        this.watchlistService = watchlistService;
+    }
 
     @GetMapping("/watchlistItemForm")
     public ModelAndView showWatchlistItemForm(@RequestParam(required = false) Integer id) {
+
+        logger.info("HTTP GET request received at /watchlistItemForm URL ");
+
         String viewName = "watchlistItemForm";
         Map<String,Object> model = new HashMap<String,Object>();
-        WatchlistItem watchlistItem = findWatchlistItemById(id);
+        WatchlistItem watchlistItem = watchlistService.findWatchlistItemById(id);
 
         if (watchlistItem == null) {
             model.put("watchlistItem", new WatchlistItem());
@@ -34,38 +49,26 @@ public class WatchlistController {
         return new ModelAndView(viewName,model);
     }
 
-    private WatchlistItem findWatchlistItemById(Integer id) {
-        for(WatchlistItem watchlistItem : watchlistItems) {
-            if (watchlistItem.getId().equals(id)) {
-                return watchlistItem;
-            }
-        }
-        return null;
-    }
-
     @PostMapping("/watchlistItemForm")
     public ModelAndView submitWatchlistItemForm(@Validated WatchlistItem watchlistItem,
                                                 BindingResult bindingResult) {
 //    public ModelAndView submitWatchlistItemForm(@Valid WatchlistItem watchlistItem) { what the video recommends
 //    public ModelAndView submitWatchlistItemForm(WatchlistItem watchlistItem) { original
 
-       if (bindingResult.hasErrors()) {
+        logger.info("HTTP POST request received at /watchlistItemForm URL ");
+
+        if (bindingResult.hasErrors()) {
            return new ModelAndView("watchlistItemForm");
        }
 
-        WatchlistItem existingItem = findWatchlistItemById(watchlistItem.getId());
+       try {
+           watchlistService.addOrUpdateWatchlistItem(watchlistItem);
+       } catch (DuplicateTitleException e) {
+           bindingResult.rejectValue("title", "", "This title already exists on your watchlist");
+           return new ModelAndView("watchlistItemForm");
+       }
 
-        if (existingItem == null) {
-            watchlistItem.setId(index++);
-            watchlistItems.add(watchlistItem);
-        } else {
-            existingItem.setComment(watchlistItem.getComment());
-            existingItem.setPriority(watchlistItem.getPriority());
-            existingItem.setRating(watchlistItem.getRating());
-            existingItem.setTitle(watchlistItem.getTitle());
-        }
-
-
+       watchlistService.addOrUpdateWatchlistItem(watchlistItem);
 
         RedirectView redirect = new RedirectView();
         redirect.setUrl("/watchlist");
@@ -76,12 +79,14 @@ public class WatchlistController {
     @GetMapping("/watchlist")
     public ModelAndView getWatchlist() {
 
+        logger.info("HTTP GET request received at /watchlist URL ");
+
         String viewName = "watchlist";
 
         Map<String,Object> model = new HashMap<String,Object>();
 
-        model.put("watchlistItems", watchlistItems);
-        model.put("numberOfMovies", watchlistItems.size());
+        model.put("watchlistItems", watchlistService.getWatchlistItems());
+        model.put("numberOfMovies", watchlistService.getWatchlistItemsSize());
 
         return new ModelAndView(viewName, model);
     }

@@ -1,6 +1,9 @@
-package com.openclassrooms.watchlist;
+package com.openclassrooms.watchlist.domain;
+import com.openclassrooms.watchlist.validation.GoodMovie;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+@GoodMovie
 public class WatchlistItem {
 
     @NotBlank(message="Please enter the title")
