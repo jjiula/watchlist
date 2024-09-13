@@ -13,7 +13,7 @@ public class CustomErrorController implements ErrorController {
 
     private final Logger logger = LoggerFactory.getLogger(CustomErrorController.class);
 
-    @Override
+//    @Override
     public String getErrorPath() {
         return "/error";
     }

@@ -39,7 +39,7 @@ public class WatchlistService {
         return watchlistRepository.findById(id);
     }
 
-    public void addOrUpdateWatchlistItem(WatchlistItem watchlistItem) {
+    public void addOrUpdateWatchlistItem(WatchlistItem watchlistItem) throws DuplicateTitleException {
         WatchlistItem existingItem = findWatchlistItemById(watchlistItem.getId());
 
         if (existingItem == null) {

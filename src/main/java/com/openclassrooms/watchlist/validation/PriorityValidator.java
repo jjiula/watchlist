@@ -1,7 +1,7 @@
 package com.openclassrooms.watchlist.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class PriorityValidator implements ConstraintValidator<Priority, String>{
     @Override

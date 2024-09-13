@@ -68,7 +68,7 @@ public class WatchlistController {
            return new ModelAndView("watchlistItemForm");
        }
 
-       watchlistService.addOrUpdateWatchlistItem(watchlistItem);
+//       watchlistService.addOrUpdateWatchlistItem(watchlistItem);
 
         RedirectView redirect = new RedirectView();
         redirect.setUrl("/watchlist");
